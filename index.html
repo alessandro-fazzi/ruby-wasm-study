@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesca Ruby REPL</title>
+    <script type="module" crossorigin src="/pesca/assets/index-C729tYuy.js"></script>
+    <link rel="stylesheet" crossorigin href="/pesca/assets/index-CTCzJPZH.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>Pesca Ruby REPL</h1>
+
+      <textarea id="editor">Pesca.imposta_partecipanti do
+  aggiungi "Alessandro", bloccati: "Silvia"
+  aggiungi "Silvia", bloccati: "Alessandro"
+  aggiungi "Racho", bloccati: "Iaia"
+  aggiungi "Iaia", bloccati: "Racho"
+  aggiungi "Giorgia", bloccati: "Cipo"
+  aggiungi "Cipo", bloccati: "Giorgia"
+  aggiungi "Chiara"
+end</textarea>
+
+      <button id="execute">Execute</button>
+
+      <div id="output-container">
+        <h2>Output:</h2>
+        <pre id="output"></pre>
+      </div>
+    </div>
+  </body>
+</html>
