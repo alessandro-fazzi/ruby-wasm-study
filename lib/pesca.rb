@@ -1,6 +1,8 @@
 # Pesca Module
 # This module is automatically loaded in the Ruby WASM REPL
 
+require 'forwardable'
+
 module Pesca
   VERSION = "0.1.0"
 
@@ -15,6 +17,11 @@ module Pesca
   end
 
   class Partecipanti
+    include Enumerable
+    extend Forwardable
+
+    def_delegators :@partecipanti, :reject
+
     attr_accessor :names
 
     def initialize
@@ -40,10 +47,6 @@ module Pesca
     def sample
       @partecipanti.sample
     end
-
-    def size
-      @partecipanti.size
-    end
   end
 
   class Partecipante
@@ -59,26 +62,17 @@ module Pesca
     def assegna_destinatario(partecipante)
       return false if partecipante.assegnato_a_qualcuno?
       return false if partecipante == self
+      return false if @bloccati.include?(partecipante.name)
+
       @destinatario = partecipante
       @destinatario.assegnato_a_qualcuno!
       true
     end
 
-    def assegnato_a_qualcuno!
-      @assegnato_a_qualcuno = true
-    end
-
-    def assegnato_a_qualcuno?
-      @assegnato_a_qualcuno
-    end
-
-    def inspect
-      "#{@name} -> #{@destinatario ? @destinatario.name : 'Nessuno'}"
-    end
-
-    def valid?
-      @destinatario && !@bloccati.include?(@destinatario.name)
-    end
+    def assegnato_a_qualcuno! = @assegnato_a_qualcuno = true
+    def assegnato_a_qualcuno? = @assegnato_a_qualcuno
+    def destinatario? = !!@destinatario
+    def inspect = "#{@name} -> #{@destinatario ? @destinatario.name : 'Nessuno'}"
   end
 
   def self.reset!
@@ -96,21 +90,15 @@ module Pesca
   end
 
   def self.assegna!
-    @partecipanti.each do |it|
-      i = 0
-      until it.valid?
-        i += 1
-        puts "Assegnando per #{it.name} ..."
-        it.assegna_destinatario(@partecipanti.sample)
-        raise("Oh no, più di #{@partecipanti.size * 100} tentativi: sono stanco! Devi di nuovo mettere i bigliettini nel cappello.") if i > @partecipanti.size * 100
+    until @partecipanti.all?(&:destinatario?)
+      @partecipanti.reject(&:destinatario?).each do
+        puts "Provo ad assegnare destinatario per #{it.name}"
+        it.assegna_destinatario(@partecipanti.reject(&:assegnato_a_qualcuno?).sample)
       end
     end
-  rescue => e
-    puts "Errore durante l'assegnazione: #{e.message}"
+
+    puts @partecipanti.lista
   end
 end
-
-# Make it easier to access
-include Pesca
 
 puts "Pesca module loaded successfully!"
