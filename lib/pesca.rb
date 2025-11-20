@@ -16,88 +16,88 @@ module Pesca
     puts "Platform: #{RUBY_PLATFORM}"
   end
 
-  class Partecipanti
+  class Participants
     include Enumerable
     extend Forwardable
 
-    def_delegators :@partecipanti, :reject
+    def_delegators :@participants, :reject
 
     attr_accessor :names
 
     def initialize
-      @partecipanti = []
+      @participants = []
     end
 
     def reset!
-      @partecipanti = []
+      @participants = []
     end
 
-    def aggiungi(name, bloccati: "")
-      @partecipanti << Partecipante.new(name, bloccati: bloccati.split(",").map(&:strip))
+    def add(name, blocked: "")
+      @participants << Participant.new(name, blocked: blocked.split(",").map(&:strip))
     end
 
-    def lista
-      @partecipanti.map(&:inspect)
+    def list
+      @participants.map(&:inspect)
     end
 
     def each(&block)
-      @partecipanti.each(&block)
+      @participants.each(&block)
     end
 
     def sample
-      @partecipanti.sample
+      @participants.sample
     end
   end
 
-  class Partecipante
+  class Participant
     attr_reader :name
 
-    def initialize(name, bloccati: [])
+    def initialize(name, blocked: [])
       @name = name
-      @assegnato = nil
-      @bloccati = bloccati
-      @assegnato_a_qualcuno = false
+      @assigned = nil
+      @blocked = blocked
+      @assigned_to_someone = false
     end
 
-    def assegna_destinatario(partecipante)
-      return false if partecipante.assegnato_a_qualcuno?
-      return false if partecipante == self
-      return false if @bloccati.include?(partecipante.name)
+    def assign_recipient(participant)
+      return false if participant.assigned_to_someone?
+      return false if participant == self
+      return false if @blocked.include?(participant.name)
 
-      @destinatario = partecipante
-      @destinatario.assegnato_a_qualcuno!
+      @recipient = participant
+      @recipient.assigned_to_someone!
       true
     end
 
-    def assegnato_a_qualcuno! = @assegnato_a_qualcuno = true
-    def assegnato_a_qualcuno? = @assegnato_a_qualcuno
-    def destinatario? = !!@destinatario
-    def inspect = "#{@name} -> #{@destinatario ? @destinatario.name : 'Nessuno'}"
+    def assigned_to_someone! = @assigned_to_someone = true
+    def assigned_to_someone? = @assigned_to_someone
+    def recipient? = !!@recipient
+    def inspect = "#{@name} -> #{@recipient ? @recipient.name : 'Nobody'}"
   end
 
   def self.reset!
-    @partecipanti = nil
+    @participants = nil
   end
 
-  def self.imposta_partecipanti(&block)
-    @partecipanti ||= Partecipanti.new
+  def self.set_participants(&block)
+    @participants ||= Participants.new
 
-    @partecipanti.instance_exec(&block)
+    @participants.instance_exec(&block)
   end
 
-  def self.lista_partecipanti
-    @partecipanti ? @partecipanti.lista : []
+  def self.list_participants
+    @participants ? @participants.list : []
   end
 
-  def self.assegna!
-    until @partecipanti.all?(&:destinatario?)
-      @partecipanti.reject(&:destinatario?).each do
-        puts "Provo ad assegnare destinatario per #{it.name}"
-        it.assegna_destinatario(@partecipanti.reject(&:assegnato_a_qualcuno?).sample)
+  def self.assign!
+    until @participants.all?(&:recipient?)
+      @participants.reject(&:recipient?).each do
+        puts "Trying to assign recipient for #{it.name}"
+        it.assign_recipient(@participants.reject(&:assigned_to_someone?).sample)
       end
     end
 
-    puts @partecipanti.lista
+    puts @participants.list
   end
 end
 

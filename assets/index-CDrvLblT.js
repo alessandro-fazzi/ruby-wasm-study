@@ -29,15 +29,13 @@ ${s[1]}`:`${e}: ${r}`}}const xe=(u,e,r)=>{switch(u&j.Mask){case j.None:break;cas
         result = eval(<<-'RUBY_CODE'
         Pesca.reset!
 ${u}
-      Pesca.assegna!
+      Pesca.assign!
 RUBY_CODE
         )
-        $stdout = old_stdout
-        output = $captured_output.string
-        output += "=> " + result.inspect if !result.nil?
-        output
+        $captured_output.string
       rescue => e
-        $stdout = old_stdout
         "Error: " + e.class.to_s + ": " + e.message + "\\n" + e.backtrace.join("\\n")
+      ensure
+        $stdout = old_stdout
       end
     `);console.log("Result:",s),e.textContent=s.toString()}catch(r){e.textContent=`Error: ${r.message}`,console.error("Error executing:",r)}}Ke().catch(u=>{document.getElementById("output").textContent=`Failed to initialize Ruby VM: ${u.message}`,console.error(u)});document.getElementById("execute").addEventListener("click",Ie);document.getElementById("editor").addEventListener("keydown",u=>{(u.ctrlKey||u.metaKey)&&u.key==="Enter"&&(u.preventDefault(),Ie())});

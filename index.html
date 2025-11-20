@@ -5,22 +5,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pesca Ruby REPL</title>
-    <script type="module" crossorigin src="/ruby-wasm-study/assets/index-CE1Nk7Jh.js"></script>
-    <link rel="stylesheet" crossorigin href="/ruby-wasm-study/assets/index-CTCzJPZH.css">
+    <script type="module" crossorigin src="/ruby-wasm-study/assets/index-CDrvLblT.js"></script>
+    <link rel="stylesheet" crossorigin href="/ruby-wasm-study/assets/index-D5q1vngq.css">
   </head>
 
   <body>
     <div class="container">
-      <h1>🍑🎄 - Ruby in the browser hands-on study</h1>
+      <h1>🍑🎄 - Ruby in the browser</h1>
 
-      <textarea id="editor">Pesca.imposta_partecipanti do
-  aggiungi "Alessandro", bloccati: "Silvia"
-  aggiungi "Silvia", bloccati: "Alessandro"
-  aggiungi "Racho", bloccati: "Iaia"
-  aggiungi "Iaia", bloccati: "Racho"
-  aggiungi "Giorgia", bloccati: "Cipo"
-  aggiungi "Cipo", bloccati: "Giorgia"
-  aggiungi "Chiara"
+      <h2 class="subtitle">Hands-on study</h2>
+
+      <textarea id="editor">Pesca.set_participants do
+  add "Alessandro", blocked: "Silvia"
+  add "Silvia", blocked: "Alessandro"
+  add "Racho", blocked: "Iaia"
+  add "Iaia", blocked: "Racho"
+  add "Giorgia", blocked: "Cipo"
+  add "Cipo", blocked: "Giorgia"
+  add "Chiara"
 end</textarea>
 
       <button id="execute">Pesca!</button>
