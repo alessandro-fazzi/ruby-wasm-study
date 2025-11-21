@@ -37,7 +37,7 @@ module Pesca
     end
 
     def list
-      @participants.map(&:inspect)
+      @participants
     end
 
     def each(&block)
@@ -59,20 +59,33 @@ module Pesca
       @assigned_to_someone = false
     end
 
-    def assign_recipient(participant)
-      return false if participant.assigned_to_someone?
-      return false if participant == self
-      return false if @blocked.include?(participant.name)
+    def assign_recipient(recipient)
+      return false if recipient.assigned_to_someone?
+      return false if recipient == self
+      return false if @blocked.include?(recipient.name)
 
-      @recipient = participant
+      @recipient = recipient
       @recipient.assigned_to_someone!
       true
+    end
+
+    def reset_assignment!
+      @recipient = nil
+      @assigned_to_someone = false
+    end
+
+    def unassign_recipient!
+      @recipient = nil
+    end
+
+    def unassign_from_someone!
+      @assigned_to_someone = false
     end
 
     def assigned_to_someone! = @assigned_to_someone = true
     def assigned_to_someone? = @assigned_to_someone
     def recipient? = !!@recipient
-    def inspect = "#{@name} -> #{@recipient ? @recipient.name : 'Nobody'}"
+    def to_s = "#{@name} -> #{@recipient ? @recipient.name : 'Nobody'}"
   end
 
   def self.reset!
@@ -90,14 +103,34 @@ module Pesca
   end
 
   def self.assign!
-    until @participants.all?(&:recipient?)
-      @participants.reject(&:recipient?).each do
-        puts "Trying to assign recipient for #{it.name}"
-        it.assign_recipient(@participants.reject(&:assigned_to_someone?).sample)
-      end
+    participants = @participants.to_a
+    participants.each(&:reset_assignment!)
+
+    unless assign_recursive(participants)
+      # This would be a bug in the algorithm or constraints are too tight
+      raise "No valid assignment found. Check blocked constraints."
     end
 
     puts @participants.list
+  end
+
+  # Recursive backtracking search algorithm
+  def self.assign_recursive(participants, index = 0)
+    return true if index == participants.length
+
+    giver = participants[index]
+    available = participants.reject(&:assigned_to_someone?)
+
+    available.shuffle.each do |recipient|
+      if giver.assign_recipient(recipient)
+        return true if assign_recursive(participants, index + 1)
+
+        giver.unassign_recipient!
+        recipient.unassign_from_someone!
+      end
+    end
+
+    false
   end
 end
 
